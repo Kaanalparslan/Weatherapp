@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather_icons/weather_icons.dart';
 import 'weather_service.dart';
 
 void main() {
@@ -33,7 +34,7 @@ class _WeatherHomeState extends State<WeatherHome> {
 
   Future<void> fetchWeather() async {
     try {
-      final data = await _weatherService.fetchWeatherData('Paris'); // Şehri burada değiştirebilirsin.
+      final data = await _weatherService.fetchWeatherData('Kayseri'); // Şehir adı buradan değiştirilebilir.
       setState(() {
         weatherData = data;
         isLoading = false;
@@ -46,6 +47,28 @@ class _WeatherHomeState extends State<WeatherHome> {
     }
   }
 
+  Widget getWeatherIcon(String weather) {
+    switch (weather) {
+      case 'Clear':
+        return Icon(WeatherIcons.day_sunny, size: 64, color: Colors.white);
+      case 'Clouds':
+        return Icon(WeatherIcons.cloud, size: 64, color: Colors.white);
+      case 'Rain':
+        return Icon(WeatherIcons.rain, size: 64, color: Colors.white);
+      case 'Snow':
+        return Icon(WeatherIcons.snow, size: 64, color: Colors.white);
+      case 'Mist':
+      case 'Fog':
+        return Icon(WeatherIcons.fog, size: 64, color: Colors.white);
+      case 'Thunderstorm':
+        return Icon(WeatherIcons.thunderstorm, size: 64, color: Colors.white);
+      case 'Drizzle':
+        return Icon(WeatherIcons.sprinkle, size: 64, color: Colors.white);
+      default:
+        return Icon(WeatherIcons.cloud, size: 64, color: Colors.white);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,26 +77,46 @@ class _WeatherHomeState extends State<WeatherHome> {
           : weatherData != null
           ? Stack(
         children: [
+          // Arka plan resmi
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/background.jpg'), // Arka plan resmi
+                image: AssetImage('assets/background.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
+          // Siyah şeffaf katman
+          Container(
+            color: Colors.black.withOpacity(0.5),
+          ),
+          // İçerik
           SafeArea(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  weatherData!['weather'][0]['main'], // Örn: Clouds
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
+                // İkon ve hava durumu açıklaması bir arada
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Hava durumu ikonu
+                    if (weatherData!['weather'] != null &&
+                        weatherData!['weather'].isNotEmpty)
+                      getWeatherIcon(weatherData!['weather'][0]['main']),
+                    SizedBox(height: 10), // İkon ve metin arasında boşluk
+                    // Hava durumu açıklaması (ör. Mist)
+                    Text(
+                      weatherData!['weather'][0]['main'], // Örn: Mist
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
+                SizedBox(height: 10), // Şehir adı ve sıcaklık arasında boşluk
+                // Şehir adı
                 Text(
                   weatherData!['name'], // Şehir adı
                   style: TextStyle(
@@ -82,8 +125,9 @@ class _WeatherHomeState extends State<WeatherHome> {
                   ),
                 ),
                 SizedBox(height: 20),
+                // Sıcaklık bilgisi
                 Text(
-                  '${weatherData!['main']['temp'].toStringAsFixed(0)}°', // Sıcaklık
+                  '${weatherData!['main']['temp'].toStringAsFixed(0)}°',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 80,
@@ -98,9 +142,11 @@ class _WeatherHomeState extends State<WeatherHome> {
                   ),
                 ),
                 SizedBox(height: 40),
+                // Hava durumu detayları
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
+                    // Nem bilgisi
                     Column(
                       children: [
                         Icon(Icons.water_drop, color: Colors.white),
@@ -114,6 +160,7 @@ class _WeatherHomeState extends State<WeatherHome> {
                         ),
                       ],
                     ),
+                    // Rüzgar bilgisi
                     Column(
                       children: [
                         Icon(Icons.wind_power, color: Colors.white),
@@ -127,6 +174,7 @@ class _WeatherHomeState extends State<WeatherHome> {
                         ),
                       ],
                     ),
+                    // Basınç bilgisi
                     Column(
                       children: [
                         Icon(Icons.speed, color: Colors.white),
