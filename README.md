@@ -8,7 +8,7 @@ This is a Flutter-based mobile application that provides real-time weather updat
 - **5-Day Forecast**: Detailed 5-day weather forecast with dynamic icons.
 - **Dynamic City Management**: Add, remove, and set the default city.
 - **Persistent Data Storage**: Saves selected cities and the last chosen city using `SharedPreferences`.
-- **Responsive Design**: Optimized for both small and large screen.
+- **Responsive Design**: Optimized for both small and large screens.
 
 ## Screenshots
 
