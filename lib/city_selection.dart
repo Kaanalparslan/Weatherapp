@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather_icons/weather_icons.dart';
 import 'weather_service.dart';
+import 'dart:convert';
 
 class CitySelectionPage extends StatefulWidget {
   @override
@@ -9,40 +11,61 @@ class CitySelectionPage extends StatefulWidget {
 
 class _CitySelectionPageState extends State<CitySelectionPage> {
   final WeatherService _weatherService = WeatherService();
-
-  // Şehir listesi (API'dan güncellenecek)
   List<Map<String, dynamic>> cities = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchCities();
+    loadCities(); // Kaydedilen şehirleri yükle
   }
 
-  // API'dan şehirlerin hava durumu bilgilerini çek
-  Future<void> fetchCities() async {
+  // SharedPreferences'tan şehirleri yükle
+  Future<void> loadCities() async {
+    setState(() {
+      isLoading = true;
+    });
     try {
-      List<String> defaultCities = ['London', 'Washington', 'Sydney', 'Ontario'];
-      List<Map<String, dynamic>> updatedCities = [];
-      for (String city in defaultCities) {
-        final weatherData = await _weatherService.fetchWeatherData(city);
-        updatedCities.add({
-          'name': weatherData['name'],
-          'weather': weatherData['weather'][0]['main'],
-          'temp': weatherData['main']['temp'].toStringAsFixed(0),
-        });
+      final prefs = await SharedPreferences.getInstance();
+      final savedCities = prefs.getStringList('cities') ?? [];
+      if (savedCities.isNotEmpty) {
+        cities = savedCities.map((city) => json.decode(city) as Map<String, dynamic>).toList();
+      } else {
+        // Varsayılan şehirler
+        await fetchDefaultCities();
       }
-      setState(() {
-        cities = updatedCities;
-        isLoading = false;
-      });
     } catch (e) {
-      print('Hata: $e');
+      print("Hata: $e");
+    } finally {
       setState(() {
         isLoading = false;
       });
     }
+  }
+
+  // Varsayılan şehirleri API'dan çek
+  Future<void> fetchDefaultCities() async {
+    List<String> defaultCities = ['London', 'Washington', 'Sydney', 'Ontario'];
+    List<Map<String, dynamic>> updatedCities = [];
+    for (String city in defaultCities) {
+      final weatherData = await _weatherService.fetchWeatherData(city);
+      updatedCities.add({
+        'name': weatherData['name'],
+        'weather': weatherData['weather'][0]['main'],
+        'temp': weatherData['main']['temp'].toStringAsFixed(0),
+      });
+    }
+    setState(() {
+      cities = updatedCities;
+    });
+    saveCities(); // Varsayılan şehirleri kaydet
+  }
+
+  // SharedPreferences'a şehirleri kaydet
+  Future<void> saveCities() async {
+    final prefs = await SharedPreferences.getInstance();
+    final encodedCities = cities.map((city) => json.encode(city)).toList();
+    await prefs.setStringList('cities', encodedCities);
   }
 
   // Yeni şehir ekleme fonksiyonu
@@ -56,9 +79,18 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
           'temp': weatherData['main']['temp'].toStringAsFixed(0),
         });
       });
+      saveCities(); // Şehirleri kaydet
     } catch (e) {
       print('Şehir eklenirken hata: $e');
     }
+  }
+
+  // Şehir silme fonksiyonu
+  void removeCity(int index) {
+    setState(() {
+      cities.removeAt(index);
+    });
+    saveCities(); // Güncellenen şehir listesini kaydet
   }
 
   // Şehir ekleme için açılan pencere
@@ -168,15 +200,23 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text(city['weather']),
-                          trailing: Text(
-                            "${city['temp']}°",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "${city['temp']}°",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete, color: Colors.red),
+                                onPressed: () => removeCity(index), // Şehri sil
+                              ),
+                            ],
                           ),
                           onTap: () {
-                            // Şehir seçildiğinde ana sayfaya geri dön
                             Navigator.pop(context, city['name']);
                           },
                         ),

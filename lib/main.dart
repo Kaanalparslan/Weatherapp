@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:weather_icons/weather_icons.dart';
-import 'city_selection.dart'; // Şehir seçim ekranı
+import 'city_selection.dart';
 import 'weather_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(WeatherApp());
@@ -32,7 +33,32 @@ class _WeatherHomeState extends State<WeatherHome> {
   @override
   void initState() {
     super.initState();
-    fetchWeather(currentCity);
+    loadLastSelectedCity(); // En son seçilen şehri yükle
+  }
+
+  // En son seçilen şehri SharedPreferences'tan yükle
+  Future<void> loadLastSelectedCity() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedCity = prefs.getString('lastSelectedCity') ?? "Kayseri"; // Varsayılan şehir
+      currentCity = savedCity;
+      await fetchWeather(currentCity); // Varsayılan şehrin hava durumu bilgilerini çek
+    } catch (e) {
+      print("Hata: $e");
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  // En son seçilen şehri SharedPreferences'a kaydet
+  Future<void> saveLastSelectedCity(String cityName) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('lastSelectedCity', cityName);
   }
 
   // Hava durumu verisini API'dan çek
@@ -67,6 +93,7 @@ class _WeatherHomeState extends State<WeatherHome> {
       setState(() {
         currentCity = selectedCity;
       });
+      await saveLastSelectedCity(selectedCity); // Yeni şehri kaydet
       fetchWeather(selectedCity); // Yeni şehrin hava durumu verisini çek
     }
   }
