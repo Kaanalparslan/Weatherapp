@@ -12,9 +12,9 @@ This is a Flutter-based mobile application that provides real-time weather updat
 
 ## Screenshots
 
-| Home Page                                   | City Selection Page                            |
-|---------------------------------------------|-----------------------------------------------|
-| ![Home Page](screenshots/homepage.png)      | ![City Selection](screenshots/city-selection.png) |
+| Home Page                              | City Selection Page                               |
+|----------------------------------------|---------------------------------------------------|
+| ![Home Page](screenshots/homepage.png) | ![City Selection](screenshots/city-selection.png) |
 
 ## Technologies Used
 
