@@ -101,22 +101,22 @@ class _WeatherHomeState extends State<WeatherHome> {
   Widget getWeatherIcon(String weather) {
     switch (weather) {
       case 'Clear':
-        return Icon(WeatherIcons.day_sunny, size: 24, color: Colors.white);
+        return Icon(WeatherIcons.day_sunny, size: 32, color: Colors.amber);
       case 'Clouds':
-        return Icon(WeatherIcons.cloud, size: 28, color: Colors.white);
+        return Icon(WeatherIcons.cloud, size: 32, color: Colors.white);
       case 'Rain':
-        return Icon(WeatherIcons.rain, size: 24, color: Colors.white);
+        return Icon(WeatherIcons.rain, size: 32, color: Colors.blue);
       case 'Snow':
-        return Icon(WeatherIcons.snow, size: 24, color: Colors.white);
+        return Icon(WeatherIcons.snow, size: 32, color: Colors.lightBlue);
       case 'Mist':
       case 'Fog':
-        return Icon(WeatherIcons.fog, size: 24, color: Colors.white);
+        return Icon(WeatherIcons.fog, size: 32, color: Colors.white);
       case 'Thunderstorm':
-        return Icon(WeatherIcons.thunderstorm, size: 24, color: Colors.white);
+        return Icon(WeatherIcons.thunderstorm, size: 32, color: Colors.deepPurple);
       case 'Drizzle':
-        return Icon(WeatherIcons.sprinkle, size: 28, color: Colors.white);
+        return Icon(WeatherIcons.sprinkle, size: 32, color: Colors.blueAccent);
       default:
-        return Icon(WeatherIcons.cloud, size: 28, color: Colors.white);
+        return Icon(WeatherIcons.cloud, size: 32, color: Colors.white);
     }
   }
 
@@ -151,7 +151,7 @@ class _WeatherHomeState extends State<WeatherHome> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.menu, color: Colors.white, size: 28),
+                        icon: Icon(Icons.menu, color: Colors.white, size: 32),
                         onPressed: openCitySelectionPage, // Şehir seçim ekranına git
                       ),
                     ],
@@ -180,16 +180,16 @@ class _WeatherHomeState extends State<WeatherHome> {
                           fontSize: 20,
                         ),
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 30),
                       Text(
                         '${weatherData!['main']['temp'].toStringAsFixed(0)}°',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 72,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 84,
+                          fontWeight: FontWeight.w200,
                         ),
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 50),
                       // Ek hava durumu detayları
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -101,15 +101,15 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Yeni Şehir Ekle"),
+          title: Text("Add City"),
           content: TextField(
             controller: cityNameController,
-            decoration: InputDecoration(labelText: "Şehir Adı"),
+            decoration: InputDecoration(labelText: "City Name"),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("İptal"),
+              child: Text("Cancel"),
             ),
             TextButton(
               onPressed: () async {
@@ -118,7 +118,7 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
                   Navigator.pop(context);
                 }
               },
-              child: Text("Ekle"),
+              child: Text("Enter"),
             ),
           ],
         );
@@ -158,7 +158,7 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
         children: [
           // Arka plan rengi
           Container(
-            color: Colors.lightBlue.shade100,
+            color: Colors.deepPurple.shade200,
           ),
           SafeArea(
             child: Column(
@@ -231,7 +231,7 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: openAddCityDialog,
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.amber,
         child: Icon(Icons.add),
       ),
     );
