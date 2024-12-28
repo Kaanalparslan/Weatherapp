@@ -158,7 +158,15 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
         children: [
           // Arka plan rengi
           Container(
-            color: Colors.deepPurple.shade200,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/background.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Container(
+            color: Colors.black.withOpacity(0.5),
           ),
           SafeArea(
             child: Column(
@@ -231,7 +239,7 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: openAddCityDialog,
-        backgroundColor: Colors.amber,
+        backgroundColor: Colors.green,
         child: Icon(Icons.add),
       ),
     );
