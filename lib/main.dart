@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:weather_icons/weather_icons.dart';
+import 'city_selection.dart'; // Şehir seçim ekranı
 import 'weather_service.dart';
 
 void main() {
@@ -23,6 +24,7 @@ class WeatherHome extends StatefulWidget {
 
 class _WeatherHomeState extends State<WeatherHome> {
   final WeatherService _weatherService = WeatherService();
+  String currentCity = "Kayseri"; // Varsayılan şehir
   Map<String, dynamic>? weatherData;
   List<dynamic>? forecastData;
   bool isLoading = true;
@@ -30,13 +32,17 @@ class _WeatherHomeState extends State<WeatherHome> {
   @override
   void initState() {
     super.initState();
-    fetchWeather();
+    fetchWeather(currentCity);
   }
 
-  Future<void> fetchWeather() async {
+  // Hava durumu verisini API'dan çek
+  Future<void> fetchWeather(String city) async {
+    setState(() {
+      isLoading = true;
+    });
     try {
-      final currentWeather = await _weatherService.fetchWeatherData('Kayseri');
-      final fiveDayForecast = await _weatherService.fetchFiveDayForecast('Kayseri');
+      final currentWeather = await _weatherService.fetchWeatherData(city);
+      final fiveDayForecast = await _weatherService.fetchFiveDayForecast(city);
       setState(() {
         weatherData = currentWeather;
         forecastData = fiveDayForecast;
@@ -50,12 +56,27 @@ class _WeatherHomeState extends State<WeatherHome> {
     }
   }
 
+  // Şehir seçim ekranına git
+  Future<void> openCitySelectionPage() async {
+    final selectedCity = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CitySelectionPage()),
+    );
+
+    if (selectedCity != null && selectedCity != currentCity) {
+      setState(() {
+        currentCity = selectedCity;
+      });
+      fetchWeather(selectedCity); // Yeni şehrin hava durumu verisini çek
+    }
+  }
+
   Widget getWeatherIcon(String weather) {
     switch (weather) {
       case 'Clear':
         return Icon(WeatherIcons.day_sunny, size: 24, color: Colors.white);
       case 'Clouds':
-        return Icon(WeatherIcons.cloud, size: 24, color: Colors.white);
+        return Icon(WeatherIcons.cloud, size: 28, color: Colors.white);
       case 'Rain':
         return Icon(WeatherIcons.rain, size: 24, color: Colors.white);
       case 'Snow':
@@ -66,9 +87,9 @@ class _WeatherHomeState extends State<WeatherHome> {
       case 'Thunderstorm':
         return Icon(WeatherIcons.thunderstorm, size: 24, color: Colors.white);
       case 'Drizzle':
-        return Icon(WeatherIcons.sprinkle, size: 24, color: Colors.white);
+        return Icon(WeatherIcons.sprinkle, size: 28, color: Colors.white);
       default:
-        return Icon(WeatherIcons.cloud, size: 24, color: Colors.white);
+        return Icon(WeatherIcons.cloud, size: 28, color: Colors.white);
     }
   }
 
@@ -96,6 +117,19 @@ class _WeatherHomeState extends State<WeatherHome> {
           SafeArea(
             child: Column(
               children: [
+                // Custom Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.menu, color: Colors.white, size: 28),
+                        onPressed: openCitySelectionPage, // Şehir seçim ekranına git
+                      ),
+                    ],
+                  ),
+                ),
                 // Üst kısım: Mevcut hava durumu
                 Expanded(
                   flex: 4,
@@ -126,13 +160,6 @@ class _WeatherHomeState extends State<WeatherHome> {
                           color: Colors.white,
                           fontSize: 72,
                           fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'CELSIUS',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 18,
                         ),
                       ),
                       SizedBox(height: 20),
@@ -186,20 +213,20 @@ class _WeatherHomeState extends State<WeatherHome> {
                 ),
                 // Alt kısım: 5 günlük tahmin
                 Expanded(
-                  flex: 2, // Alt kısım için ayrılan alan
+                  flex: 2,
                   child: Container(
-                    margin: EdgeInsets.only(top: 80), // Kartları yukarıdaki yazılardan uzaklaştır
-                    padding: EdgeInsets.symmetric(vertical: 6), // Genel padding
+                    margin: EdgeInsets.only(top: 80),
+                    padding: EdgeInsets.symmetric(vertical: 6),
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: 5, // 5 günlük tahmin
+                      itemCount: 5,
                       itemBuilder: (context, index) {
                         final forecast = forecastData![index * 8];
                         final date = DateTime.parse(forecast['dt_txt']);
                         final temp = forecast['main']['temp'].toStringAsFixed(0);
                         final weather = forecast['weather'][0]['main'];
                         return Container(
-                          width: 80, // Daha kompakt kutular
+                          width: 80,
                           margin: EdgeInsets.symmetric(horizontal: 4.0),
                           padding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                           decoration: BoxDecoration(
@@ -229,7 +256,6 @@ class _WeatherHomeState extends State<WeatherHome> {
                     ),
                   ),
                 ),
-
               ],
             ),
           ),
