@@ -139,7 +139,7 @@ class _WeatherHomeState extends State<WeatherHome> {
           ),
           // Siyah şeffaf katman
           Container(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withOpacity(0.7),
           ),
           SafeArea(
             child: Column(

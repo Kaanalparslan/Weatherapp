@@ -156,7 +156,6 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
           ? Center(child: CircularProgressIndicator())
           : Stack(
         children: [
-          // Arka plan rengi
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -166,7 +165,7 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
             ),
           ),
           Container(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withOpacity(0.7),
           ),
           SafeArea(
             child: Column(
@@ -199,7 +198,9 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
                     itemBuilder: (context, index) {
                       final city = cities[index];
                       return Card(
+                        color: Colors.white.withOpacity(0.85),
                         margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+
                         child: ListTile(
                           leading: getWeatherIcon(city['weather']), // Dinamik ikon
                           title: Text(
